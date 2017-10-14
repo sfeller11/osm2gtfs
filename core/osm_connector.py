@@ -15,7 +15,7 @@ class OsmConnector(object):
 
     """
 
-    def __init__(self, config):
+    def __init__(self, config, debug):
         """Contructor function
 
         This function gets called when OsmConnector object are created.
@@ -28,9 +28,11 @@ class OsmConnector(object):
         of the program.
 
         :param config: configuration information from the config file
+        :param debug: debug level for messages for errors, warnings and debug
 
         """
         self.config = config
+        self.debug = debug
 
         # bbox from config file for querying
         self.bbox = (str(config['query']['bbox']["s"]) + "," +
@@ -99,6 +101,9 @@ class OsmConnector(object):
 
         """
         # Preferably return cached data about routes
+            
+        self.debug.write('warning','hallo')
+
         if refresh is False:
             # Check if routes data is already built in this object
             if not self.routes:
