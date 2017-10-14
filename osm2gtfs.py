@@ -8,6 +8,7 @@ from core.configuration import Configuration
 from core.osm_connector import OsmConnector
 from core.creator_factory import CreatorFactory
 
+
 # Handle arguments
 parser = argparse.ArgumentParser(
     prog='osm2gtfs', description='Create GTFS from OpenStreetMap data.')
@@ -17,6 +18,8 @@ parser.add_argument('--config', '-c', metavar='FILE',
                     type=argparse.FileType('r'), help='Configuration file')
 parser.add_argument('--output', '-o', metavar='FILENAME',
                     type=str, help='Specify GTFS output zip file')
+parser.add_argument('--debug', '-d', metavar='DEBUGLEVEL',
+                    type=str, help='Specify Debug Messages to show')
 
 # Refresh caching arguments
 group = parser.add_mutually_exclusive_group()
@@ -28,11 +31,15 @@ group.add_argument('--refresh-all', action="store_true",
                    help='Refresh all OSM data')
 args = parser.parse_args()
 
+#print args
 
 def main():
 
     # Load, prepare and validate configuration
     config = Configuration(args)
+
+    # Initialize debug messages, warning and error logic
+    debug = Debug(args)
 
     # Initiate OpenStreetMap helper containing data
     data = OsmConnector(config.config)
@@ -53,7 +60,7 @@ def main():
     schedule = transitfeed.Schedule()
 
     # Initiate creators for GTFS components through an object factory
-    factory = CreatorFactory(config.config)
+    factory = CreatorFactory(config.config, debug)
     agency_creator = factory.get_agency_creator()
     feed_info_creator = factory.get_feed_info_creator()
     routes_creator = factory.get_routes_creator()
